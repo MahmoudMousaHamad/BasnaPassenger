@@ -18,7 +18,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.basna.Model.Driver;
+import com.example.basna.Model.Passenger;
 import com.example.basna.collections.MarkerCollection;
 import com.example.basna.inrerfaces.FirebaseDriverListener;
 import com.example.basna.inrerfaces.LatLngInterpolator;
@@ -81,8 +81,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseDriverLis
 
         uiHelper = new UiHelper(this);
 
-        assert mapFragment != null;
-
         mapFragment.getMapAsync(googleMap -> this.googleMap = googleMap);
 
         locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -140,15 +138,19 @@ public class MainActivity extends AppCompatActivity implements FirebaseDriverLis
     }
 
     @Override
-    public void onDriverAdded(Driver driver) {
+    public void onPassengerAdded(Passenger passenger) {
         MarkerOptions markerOptions =
-                googleMapHelper.getDriverMarkerOptions(new LatLng(driver.getLat(), driver.getLng()), getApplicationContext(), R.drawable.car_icon);
+                googleMapHelper.getDriverMarkerOptions(
+                        new LatLng(passenger.getLat()
+                        , passenger.getLng())
+                        , getApplicationContext()
+                        , R.drawable.car_icon);
 
         Marker marker = googleMap.addMarker(markerOptions);
 
-        Log.e("Add new Driver -> ", driver.toString());
+        Log.e("Add new passenger -> ", passenger.toString());
 
-        marker.setTag(driver.getDriverId());
+        marker.setTag(passenger.getId());
 
         MarkerCollection.insertMarker(marker);
 
@@ -162,9 +164,9 @@ public class MainActivity extends AppCompatActivity implements FirebaseDriverLis
     }
 
     @Override
-    public void onDriverRemoved(Driver driver) {
-        MarkerCollection.removeMarker(driver.getDriverId());
-        Log.e("Removed Driver -> ", driver.toString());
+    public void onPassengerRemoved(Passenger passenger) {
+        MarkerCollection.removeMarker(passenger.getId());
+        Log.e("Removed user -> ", passenger.toString());
         totalOnlineDrivers.setText(getResources()
                 .getString(R.string.total_online_drivers)
                 .concat(" ")
@@ -175,11 +177,11 @@ public class MainActivity extends AppCompatActivity implements FirebaseDriverLis
     }
 
     @Override
-    public void onDriverUpdated(Driver driver) {
-        Log.e("Updated Driver -> ", driver.toString());
-        Marker marker = MarkerCollection.getMarker(driver.getDriverId());
+    public void onPassengerUpdated(Passenger passenger) {
+        Log.e("Updated passenger -> ", passenger.toString());
+        Marker marker = MarkerCollection.getMarker(passenger.getId());
         assert marker != null;
-        MarkerAnimationHelper.animateMarkerToGB(marker, new LatLng(driver.getLat(), driver.getLng()), new LatLngInterpolator.Spherical());
+        MarkerAnimationHelper.animateMarkerToGB(marker, new LatLng(passenger.getLat(), passenger.getLng()), new LatLngInterpolator.Spherical());
     }
 
     @Override

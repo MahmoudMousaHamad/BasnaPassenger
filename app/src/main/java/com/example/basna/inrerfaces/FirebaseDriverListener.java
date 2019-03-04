@@ -1,12 +1,12 @@
 package com.example.basna.inrerfaces;
 
-import com.example.basna.Model.Driver;
+import com.example.basna.Model.Passenger;
 
 public interface FirebaseDriverListener {
 
-    void onDriverAdded(Driver driver);
+    void onPassengerAdded(Passenger passenger);
 
-    void onDriverRemoved(Driver driver);
+    void onPassengerRemoved(Passenger passenger);
 
-    void onDriverUpdated(Driver driver);
+    void onPassengerUpdated(Passenger passenger);
 }

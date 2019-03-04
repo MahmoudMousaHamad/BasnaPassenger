@@ -3,7 +3,7 @@ package com.example.basna.helpers;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.example.basna.Model.Driver;
+import com.example.basna.Model.Passenger;
 import com.example.basna.inrerfaces.FirebaseDriverListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -20,20 +20,20 @@ public class FirebaseEventListenerHelper implements ChildEventListener {
 
     @Override
     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-        Driver driver = dataSnapshot.getValue(Driver.class);
-        firebaseDriverListener.onDriverAdded(driver);
+        Passenger passenger = dataSnapshot.getValue(Passenger.class);
+        firebaseDriverListener.onPassengerAdded(passenger);
     }
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-        Driver driver = dataSnapshot.getValue(Driver.class);
-        firebaseDriverListener.onDriverUpdated(driver);
+        Passenger passenger = dataSnapshot.getValue(Passenger.class);
+        firebaseDriverListener.onPassengerUpdated(passenger);
     }
 
     @Override
     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-        Driver driver = dataSnapshot.getValue(Driver.class);
-        firebaseDriverListener.onDriverRemoved(driver);
+        Passenger passenger = dataSnapshot.getValue(Passenger.class);
+        firebaseDriverListener.onPassengerRemoved(passenger);
     }
 
     @Override

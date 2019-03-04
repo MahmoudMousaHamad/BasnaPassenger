@@ -2,7 +2,7 @@ package com.example.basna.helpers;
 
 import android.util.Log;
 
-import com.example.basna.Model.Driver;
+import com.example.basna.Model.Passenger;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -24,11 +24,11 @@ public class FireBaseHelper {
                 .removeValue();
     }
 
-    public void updateDriver(Driver driver)
+    public void updatePassenger(Passenger Passenger)
     {
         onlineDriverDatabaseReference
-                .setValue(driver);
-        Log.e("Driver info", "Updated");
+                .setValue(Passenger);
+        Log.e("Passenger info", "Updated");
     }
 
     public void deleteDriver()
