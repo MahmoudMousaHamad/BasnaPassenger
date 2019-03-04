@@ -2,7 +2,7 @@ package com.example.basna.inrerfaces;
 
 import com.example.basna.Model.Passenger;
 
-public interface FirebaseDriverListener {
+public interface FirebasePassengerListener {
 
     void onPassengerAdded(Passenger passenger);
 

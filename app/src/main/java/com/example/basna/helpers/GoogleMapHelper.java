@@ -31,7 +31,7 @@ public class GoogleMapHelper {
         return CameraUpdateFactory.newCameraPosition(cameraPosition);
     }
 
-    public MarkerOptions getDriverMarkerOptions(LatLng position, Context context, int resource)
+    public MarkerOptions getPassengerMarkerOptions(LatLng position, Context context, int resource)
     {
         MarkerOptions options = getMarkerOptions(resource, position, context);
         options.flat(true);

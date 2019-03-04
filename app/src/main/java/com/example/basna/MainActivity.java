@@ -14,13 +14,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.basna.Model.Passenger;
 import com.example.basna.collections.MarkerCollection;
-import com.example.basna.inrerfaces.FirebaseDriverListener;
+import com.example.basna.inrerfaces.FirebasePassengerListener;
 import com.example.basna.inrerfaces.LatLngInterpolator;
 import com.google.android.gms.location.*;
 import com.google.android.gms.maps.CameraUpdate;
@@ -34,13 +36,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.example.basna.helpers.*;
 
-public class MainActivity extends AppCompatActivity implements FirebaseDriverListener {
+import java.util.UUID;
+
+public class MainActivity extends AppCompatActivity implements FirebasePassengerListener {
 
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private static final String ONLINE_DRIVERS = "online_drivers";
+    private static final String ONLINE_PASSENGERS = "online_passengers";
 
     private final GoogleMapHelper googleMapHelper = new GoogleMapHelper();
-    private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child(ONLINE_DRIVERS);
+    private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child(ONLINE_PASSENGERS);
 
     private GoogleMap googleMap;
     private LocationRequest locationRequest;
@@ -48,12 +52,15 @@ public class MainActivity extends AppCompatActivity implements FirebaseDriverLis
     private FirebaseEventListenerHelper firebaseEventListenerHelper;
     private FusedLocationProviderClient locationProviderClient;
 
-    private TextView totalOnlineDrivers;
-
     private boolean locationFlag = true;
+
+    private boolean isSharingLocation = false;
 
     private Marker currentPositionMarker;
 
+    private static final String PASSENGER_ID = UUID.randomUUID().toString();
+
+    private FireBaseHelper fireBaseHelper = new FireBaseHelper(PASSENGER_ID);
 
     private LocationCallback locationCallback = new LocationCallback() {
 
@@ -66,6 +73,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseDriverLis
             if (locationFlag) {
                 locationFlag = false;
                 animateCamera(latLng);
+            }
+            if (isSharingLocation)
+            {
+                fireBaseHelper.updatePassenger(new Passenger(location.getLatitude(), location.getLongitude(), PASSENGER_ID));
             }
             showOrAnimateMarker(location);
         }
@@ -96,9 +107,25 @@ public class MainActivity extends AppCompatActivity implements FirebaseDriverLis
             requestLocationUpdates();
         }
 
-        totalOnlineDrivers = findViewById(R.id.totalOnlineDrivers);
         firebaseEventListenerHelper = new FirebaseEventListenerHelper(this);
         databaseReference.addChildEventListener(firebaseEventListenerHelper);
+
+        TextView userStatusTextView = findViewById(R.id.userStatusTextView);
+
+        SwitchCompat switchCompat = findViewById(R.id.passengerStatusSwitch);
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                isSharingLocation = isChecked;
+                if (isSharingLocation)
+                    userStatusTextView.setText("Online");
+                else
+                {
+                    userStatusTextView.setText("Offline");
+                    fireBaseHelper.deletePassenger();
+                }
+            }
+        });
     }
 
     private void animateCamera(LatLng latLng) {
@@ -140,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseDriverLis
     @Override
     public void onPassengerAdded(Passenger passenger) {
         MarkerOptions markerOptions =
-                googleMapHelper.getDriverMarkerOptions(
+                googleMapHelper.getPassengerMarkerOptions(
                         new LatLng(passenger.getLat()
                         , passenger.getLng())
                         , getApplicationContext()
@@ -153,27 +180,12 @@ public class MainActivity extends AppCompatActivity implements FirebaseDriverLis
         marker.setTag(passenger.getId());
 
         MarkerCollection.insertMarker(marker);
-
-        totalOnlineDrivers.setText(getResources().
-                getString(R.string.total_online_drivers).
-                concat(" ").
-                concat(String
-                        .valueOf(MarkerCollection
-                                .allMarkers()
-                                .size())));
     }
 
     @Override
     public void onPassengerRemoved(Passenger passenger) {
         MarkerCollection.removeMarker(passenger.getId());
         Log.e("Removed user -> ", passenger.toString());
-        totalOnlineDrivers.setText(getResources()
-                .getString(R.string.total_online_drivers)
-                .concat(" ")
-                .concat(String
-                        .valueOf(MarkerCollection
-                                .allMarkers()
-                                .size())));
     }
 
     @Override
@@ -196,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseDriverLis
     {
         if (currentPositionMarker == null)
             currentPositionMarker = googleMap
-                    .addMarker(googleMapHelper.getDriverMarkerOptions(new LatLng(location.getLatitude()
+                    .addMarker(googleMapHelper.getPassengerMarkerOptions(new LatLng(location.getLatitude()
                             , location.getLongitude())
                             , this
                             , R.drawable.current_position_icon));

@@ -4,36 +4,36 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.basna.Model.Passenger;
-import com.example.basna.inrerfaces.FirebaseDriverListener;
+import com.example.basna.inrerfaces.FirebasePassengerListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 public class FirebaseEventListenerHelper implements ChildEventListener {
 
-    private final FirebaseDriverListener firebaseDriverListener;
+    private final FirebasePassengerListener firebasePassengerListener;
 
-    public FirebaseEventListenerHelper(FirebaseDriverListener firebaseDriverListener) {
-        this.firebaseDriverListener = firebaseDriverListener;
+    public FirebaseEventListenerHelper(FirebasePassengerListener firebasePassengerListener) {
+        this.firebasePassengerListener = firebasePassengerListener;
     }
 
 
     @Override
     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
         Passenger passenger = dataSnapshot.getValue(Passenger.class);
-        firebaseDriverListener.onPassengerAdded(passenger);
+        firebasePassengerListener.onPassengerAdded(passenger);
     }
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
         Passenger passenger = dataSnapshot.getValue(Passenger.class);
-        firebaseDriverListener.onPassengerUpdated(passenger);
+        firebasePassengerListener.onPassengerUpdated(passenger);
     }
 
     @Override
     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
         Passenger passenger = dataSnapshot.getValue(Passenger.class);
-        firebaseDriverListener.onPassengerRemoved(passenger);
+        firebasePassengerListener.onPassengerRemoved(passenger);
     }
 
     @Override

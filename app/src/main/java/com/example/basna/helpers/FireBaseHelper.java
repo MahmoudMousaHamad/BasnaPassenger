@@ -10,30 +10,30 @@ public class FireBaseHelper {
 
     private final String ONLINE_DRIVERS = "online_drivers";
 
-    private DatabaseReference onlineDriverDatabaseReference;
+    private DatabaseReference onlinePassengerDatabaseReference;
 
-    public FireBaseHelper(String driverId)
+    public FireBaseHelper(String passengerId)
     {
-        onlineDriverDatabaseReference = FirebaseDatabase
+        onlinePassengerDatabaseReference = FirebaseDatabase
                 .getInstance()
                 .getReference()
                 .child(ONLINE_DRIVERS)
-                .child(driverId);
-        onlineDriverDatabaseReference
+                .child(passengerId);
+        onlinePassengerDatabaseReference
                 .onDisconnect()
                 .removeValue();
     }
 
     public void updatePassenger(Passenger Passenger)
     {
-        onlineDriverDatabaseReference
+        onlinePassengerDatabaseReference
                 .setValue(Passenger);
         Log.e("Passenger info", "Updated");
     }
 
-    public void deleteDriver()
+    public void deletePassenger()
     {
-        onlineDriverDatabaseReference
+        onlinePassengerDatabaseReference
                 .removeValue();
     }
 
